@@ -5,27 +5,32 @@ const cookieParser = require("cookie-parser");
 const UserRoutes = require("./Routers/UserRoutes");
 require("dotenv").config();
 
-
 const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST","PUT"],
+    origin: [process.env.FRONTEND_PORT],
+    methods: ["GET", "POST", "PUT"],
     credentials: true,
   })
 );
 app.use(cookieParser());
 app.use("/", UserRoutes);
+
+const PORT = process.env.PORT || process.env.PORT1;
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+  console.error("MONGO_URI environment variable is not defined");
+  process.exit(1);
+}
+
 mongoose
-  .connect("mongodb+srv://vaishnavclt78:F6aeWleHdNgga3LJ@cluster0.pmb9eay.mongodb.net/")
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
-app.listen(3006, () => {
-  console.log("server running successfully");
+app.listen(PORT, () => {
+  console.log(`Server running successfully`);
 });
-
-
-
 
